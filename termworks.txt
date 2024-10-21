@@ -1,0 +1,145 @@
+
+
+
+
+t2 a) get empno working on project '1'
+
+ SQL> select empno from assigned_to
+  2  where projectno=1;
+
+     EMPNO
+----------
+         1
+         2
+
+t2 b)write sql statement to get details of employee working on project'1'
+
+  select e.* from employee e,assigned_to at
+  where e.empno=at.empno
+  and projectno=1;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+t2 c)write a sql statement to get details of all the employees working on'DBMS' project
+    select e.* from employee e,assigned_to at,project p
+    where p.projectname='DBMS'
+    and p.projectno=at.projectno
+    and e.empno=at.empno;
+
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+t2.d)
+ select e.* from employee e,assigned_to at
+ where e.empno=at.empno
+ and at.projectno=2
+ intersect
+ select e.* from employee e,assigned_to at
+ where e.empno=at.empno
+ and at.projectno=3;
+
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+t2.e)
+
+ select e.* from employee e,assigned_to at
+ where e.empno=at.empno
+ and at.projectno=2
+ union
+ select e.* from employee e,assigned_to at
+ where e.empno=at.empno
+ and at.projectno=3;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+         3 neymar               f        888 01-FEB-97
+T3)
+ create table fines
+ ( 
+  fine_id integer not null
+  primary key,
+  constraint FINES_PK_VIOLATION
+  fine_amt decimal(10,2) not null,
+  empno integer not null
+
+T4)
+
+t7:
+
+select empname and dob from employee e
+where e.empno not in (select empno from assigned_to);
+
+o/p:
+
+EMPNAME              DOB
+-------------------- ---------
+hello                27-FEB-98
+-------------------------------------------------------------------------------------------------------------------------------------------
+t8: display all the names of all employees working on all projects
+ 
+SQL> SELECT e.empname
+  2  FROM employee e
+  3  WHERE NOT EXISTS (
+  4      SELECT projectno
+  5      FROM project p
+  6      MINUS
+  7      SELECT at.projectno
+  8      FROM assigned_to at
+  9      WHERE at.empno = e.empno
+ 10  );
+
+o/p:
+
+EMPNAME
+-------------
+vrush
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+t10:display the name of first 3 senior employees
+
+SQL> SELECT * 
+  2  FROM (
+  3    SELECT * 
+  4    FROM employee
+  5    ORDER BY dob
+  6  ) 
+  7  WHERE ROWNUM <= 3;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97
+         4 hello                m        878 27-FEB-98       7000
+-------------------------------------------------------------------------------------------------------------------------------------------
+t11: find the total fine incured for each employee
+
+SQL> select empno,empname,NVL(sum(fine_amt),0)
+  2  as totalfine
+  3  from(
+  4  select e.*,f.fine_amt from employee e,fines f
+  5  where e.empno=f.empno(+))
+  6  group by empno,empname;
+
+     EMPNO EMPNAME               TOTALFINE
+---------- -------------------- ----------
+         4 hello                         0
+         3 neymar                        0
+         1 vrush                       300
+         2 messi                       300
+-------------------------------------------------------------------------------------------------------------------------------------------
+t12:display no of employees working under each project having count greater than 3
+SQL> select projectno,count(empno) as count
+  2  from assigned_to
+  3  group by projectno
+  4  having count(empno)>3;
+
+o/p:
+
+no rows selected
