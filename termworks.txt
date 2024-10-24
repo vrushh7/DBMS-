@@ -69,9 +69,55 @@ T3)
   fine_amt decimal(10,2) not null,
   empno integer not null
 
-T4)
+T4) Modify the schema to store details of dependents(WEAK ENTITY) for all employees if  
+    exists
 
-t7:
+ create table dependent1
+ (
+  dep_id integer not null
+  primary key,
+  dep_name varchar(20),
+  relation varchar(200),
+  empno integer not null,
+  CONSTRAINT FK_VIOLATION foreign key(empno)
+  references employee(empno)
+ );
+-------------------------------------------------------------------------------------------
+t5)deleting rows/dropping tables /updating rows /information
+   1) deleting rows:
+      delete from employee where empno=4;
+   
+ o/p:
+     1 row deleted.
+
+   2)dropping table:
+     drop table employee
+ o/p:
+     table dropped.
+   
+   3)updating rows:
+
+     UPDATE employees
+     SET salary = 55000
+     WHERE employee_id = 1;
+o/p: 
+    1 row affected
+------------------------------------------------------------------------------------------- 
+t6)Study the impact of deleting rows and dropping tables on FK / Referencial integrity
+   
+    drop table employee;
+
+o/p:  unique/primary keys in table referenced by foreign keys
+    
+SQL> delete from employee where empno=1;
+delete from employee where empno=1
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (SCOTT.ASSIGNED_TO_FK_EMP_VIOLATION) violated -
+child record found
+-------------------------------------------------------------------------------------------
+   
+t7: Display the name and dob if all the employees who are on bench
 
 select empname and dob from employee e
 where e.empno not in (select empno from assigned_to);
@@ -100,8 +146,25 @@ o/p:
 EMPNAME
 -------------
 vrush
+-------------------------------------------------------------------------------------------
+t9: Display name of all employees working on atleast all of the projects that employee 1 is working 
 
--------------------------------------------------------------------------------------------------------------------------------------------
+select e.empname from employee e
+where not exists
+(
+ select projectno from assigned_to at
+ where empno=1
+ minus
+ select projectno from assigned_to at
+ where e.empno=at.empno
+);
+
+o/p:
+
+EMPNAME
+--------------------
+vrush
+-------------------------------------------------------------------------------------------
 t10:display the name of first 3 senior employees
 
 SQL> SELECT * 
@@ -143,3 +206,288 @@ SQL> select projectno,count(empno) as count
 o/p:
 
 no rows selected
+-------------------------------------------------------------------------------------------
+
+t13) Study of:
+      
+     a) ORDER BY CLAUSE
+     b) ALTER STATEMENT
+
+SQL> select * from employee 
+  2  order by dob asc;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97       6500
+         1 vrush                m        999 29-MAR-99       4000
+         4 hello                m       8898 23-JUN-99      89000
+
+SQL> select * from employee 
+  2  order by dob desc;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         4 hello                m       8898 23-JUN-99      89000
+         1 vrush                m        999 29-MAR-99       4000
+         3 neymar               f        888 01-FEB-97       6500
+         2 messi                m        111 05-JUN-90       4000
+
+b) Alter statements
+
+  1) to add a attribute in a table 
+    SQL> alter table employee add(address varchar(200));
+
+o/p:
+
+Table altered.
+
+  2) to remove an attribute from the table
+
+ alter table employee drop column address;
+
+ o/p:
+  
+ Table altered
+ 
+ 3) modify the datatype in the table
+  
+  SQL> alter table employee modify address integer;
+
+Table altered.
+
+ 4) Rename the column in the table
+ 
+SQL> alter table employee rename column address to locality;
+
+o/p:
+
+Table altered.
+
+5) Rename the table 
+  
+SQL> alter table employee rename to employees;
+
+o/p:
+
+Table altered.
+
+6) To add a primary in key in the existing table
+ 
+SQL> alter table employee add primary key(rollno);
+
+o/p:
+ 
+Table altered
+-------------------------------------------------------------------------------------------
+
+t14)  Study of 
+   1) Max function :
+     
+      SQL> select * from employees;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY   LOCALITY
+---------- -------------------- - ---------- --------- ---------- ----------
+         4 hello                m       8898 23-JUN-99      89000
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97       6500
+
+to display 2nd highest salary
+
+SQL> select max(salary) from employees;
+
+MAX(SALARY)
+-----------
+      89000
+
+SQL> select max(salary) from employees
+  2  where salary<>
+  3  (
+  4   select max(salary) from employees
+  5  );
+
+MAX(SALARY)
+-----------
+       6500
+
+2)MIN function
+
+SQL> select min(salary) from employees
+  2  ;
+
+o/p:
+MIN(SALARY)
+-----------
+       4000
+
+3) SUM function
+ 
+ SQL> select * from fines;
+
+   FINE_ID   FINE_AMT      EMPNO
+---------- ---------- ----------
+         1        100          1
+         2        300          2
+         3        200          1
+
+SQL> select sum(fine_amt) as totalfine
+  2  from fines 
+  3  where empno=1;
+
+o/p:
+
+ TOTALFINE
+----------
+       300
+
+4) AVG function
+
+SQL> select avg(salary) from employees;
+
+o/p:
+
+AVG(SALARY)
+-----------
+      25875
+-------------------------------------------------------------------------------------------
+
+tw15) Study of
+ 
+      1)Between :
+     
+     SQL> select * from employees
+  2  where salary between 4000 and 10000;
+
+o/p:
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY   
+---------- -------------------- - ---------- --------- ---------- 
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97       6500
+
+
+
+
+    2) LIKE :
+  
+    SQL> select * from employees
+  2  where empname like 'v%';
+
+o/p:
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY   
+---------- -------------------- - ---------- --------- ---------- 
+         1 vrush                m        999 29-MAR-99       4000
+
+This query will return all employees whose name starts with the letter 'v'such as 'vrush'
+
+
+
+SQL>  select * from employees
+  2   where empname like '%sh%';
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         5 kush                 m      98989 12-FEB-98      19000
+         1 vrush                m        999 29-MAR-99     100000
+
+
+
+This query will return names such as "vrush", "kush" since all of these names contain "sh" somewhere in the string
+
+ 3) ALL:
+ 
+   
+SQL>  select * from employees
+  2   where salary > all
+  3   ( 
+  4    select salary from employees
+  5    where sex='m'
+  6   );
+
+o/p:
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         3 neymar               f        888 01-FEB-97     200000
+
+ 4) ANY:
+ 
+ SQL> select * from employees
+  2  where salary > any
+  3  (
+  4   select salary from employees
+  5   where sex='m'
+  6  );
+
+o/p:
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         3 neymar               f        888 01-FEB-97     200000
+         1 vrush                m        999 29-MAR-99     100000
+         4 hello                m       8898 23-JUN-99      89000
+         5 kush                 m      98989 12-FEB-98      19000
+
+5) IN:
+
+  SQL> select * from employees
+  2  where empno in (2,3);
+
+o/p:
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97     200000
+
+
+
+
+
+
+
+
+
+
+
+7) ROWNUM:
+
+  SELECT * FROM employee
+WHERE ROWNUM <= 2;
+
+o/p:
+  
+SQL> SELECT * FROM employee
+  2  WHERE ROWNUM <= 2;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         4 hello                m       8898 23-JUN-99      89000
+         5 kush                 m      98989 12-FEB-98      19000
+
+
+
+8) COUNT 
+ 
+ SQL> select count(salary) from employee
+  2  where salary >= 60000;
+
+o/p:
+
+COUNT(SALARY)
+-------------
+            3
+
+9) DISITINCT:
+ 
+SQL> select distinct sex from employee;
+
+S
+-
+m
+f
+
+
