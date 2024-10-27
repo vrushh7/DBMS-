@@ -1,0 +1,25 @@
+SQL> select * from employee
+  2  where exists
+  3  (
+  4   select empno from assigned_to
+  5   where employee.empno=assigned_to.empno
+  6  );
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97       6500
+
+
+
+SQL> select * from employee 
+  2  where not exists
+  3  (
+  4   select empno from assigned_to
+  5   where employee.empno=assigned_to.empno
+  6  );
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         4 hello                m        878 27-FEB-98       7000

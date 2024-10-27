@@ -1,0 +1,71 @@
+SQL> select * from employee
+  2  where salary IN
+  3  (
+  4   7000,4000
+  5  );
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         1 vrush                m        999 29-MAR-99       4000
+         2 messi                m        111 05-JUN-90       4000
+         4 hello                m        878 27-FEB-98       7000
+
+
+
+SQL> select * from project where
+  2  projectname IN
+  3  (
+  4   'DBMS','JAVA'
+  5  );
+
+ PROJECTNO PROJECTNAME          CHEIFARCHI
+---------- -------------------- ----------
+         1 DBMS                 UPK
+         2 JAVA                 IRU
+
+SQL> select * from assigned_to;
+
+     EMPNO  PROJECTNO
+---------- ----------
+         1          1
+         1          2
+         1          3
+         2          1
+         3          3
+
+SQL> select empno from employee
+  2  where empno in
+  3  (
+  4   select empno from assigned_to
+  5  );
+
+     EMPNO
+----------
+         1
+         2
+         3
+
+SQL> select empname from employee
+  2  where empno in 
+  3  (
+  4    select empno from assigned_to
+  5  );
+
+EMPNAME
+--------------------
+vrush
+messi
+Neymar
+
+SQL> select empname from employee 
+  2  (
+  3  
+SQL> select empname from employee
+  2  where empno not in
+  3  (
+  4   select empno from assigned_to
+  5  );
+
+EMPNAME
+--------------------
+hello

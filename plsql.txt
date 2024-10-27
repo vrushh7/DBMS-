@@ -1,0 +1,91 @@
+
+1)
+
+SET SERVEROUTPUT ON;
+
+SQL> SET SERVEROUTPUT ON;
+SQL> 
+SQL> DECLARE
+  2    projectcount INTEGER;
+  3  BEGIN
+  4    INSERT INTO project VALUES (5, 'Dummy', 'xyz');
+  5    
+  6    SELECT COUNT(projectno) INTO projectcount
+  7    FROM project;
+  8    
+  9    DELETE FROM project WHERE projectno = 10;
+ 10    
+ 11    DBMS_OUTPUT.PUT_LINE('No of projects = ' || projectcount);
+ 12  END;
+ 13  /
+
+o/p:
+
+No of projects = 5
+-------------------------------------------------------------------------------------------
+2)
+
+SQL> SET SERVEROUTPUT ON; -- Enable output for DBMS_OUTPUT
+
+DECLARE
+    projectcount INTEGER; -- Declare a variable to hold the count of projects
+    status VARCHAR(40);    -- Declare a variable to hold the status of the projects
+BEGIN
+    INSERT INTO project VALUES (6, 'D', 'B'); -- Insert a new project into the project table
+
+    SELECT COUNT(projectno) INTO projectcount -- Count the number of projects and store it in projectcount
+    FROM project;
+
+    IF projectcount > 3 THEN -- Check if the project count is greater than 3
+        status := 'Sufficient projects'; -- Set status to 'Sufficient projects' if the condition is true
+    ELSE
+        status := 'Very few projects'; -- Set status to 'Very few projects' if the condition is false
+    END IF;
+
+    DELETE FROM project WHERE projectno = 10; -- Delete the project with projectno = 10, if it exists
+
+    DBMS_OUTPUT.PUT_LINE('No of projects = ' || projectcount || ', Status of the project = ' || status); -- Output the number of projects and their status
+END;
+/
+
+
+o/p:
+
+No of projects = 6, Status of the project = Sufficient projects
+
+PL/SQL procedure successfully completed.
+
+-------------------------------------------------------------------------------------------
+
+3) WHILE LOOP IN PL/SQL
+
+ SQL> SET SERVEROUTPUT ON;
+SQL> 
+SQL> DECLARE
+  2      ROWNO INTEGER;            -- Declaring a variable ROWNO to hold the project number.
+  3      PNAME CHAR(20);           -- Declaring a variable PNAME to hold the project name.
+  4      PROJECTCOUNT INTEGER;     -- Declaring a variable PROJECTCOUNT to hold the total count of projects.
+  5     BEGIN
+  6        ROWNO := 1;               -- Initializing ROWNO to 1, which is the starting PROJECTNO in the PROJECT table.
+  7      SELECT COUNT(PROJECTNO) INTO PROJECTCOUNT FROM PROJECT;  -- Counting the total number of projects and storing it in PROJECTCOUNT.
+  8      WHILE ROWNO <= 4 LOOP      -- Looping while ROWNO is less than or equal to 4.
+  9      SELECT PROJECTNAME INTO PNAME FROM PROJECT  -- Selecting the PROJECTNAME from PROJECT table for the current ROWNO.
+  10      WHERE PROJECTNO = ROWNO;   -- Filtering the selection by the current ROWNO.
+  11     
+  12     DBMS_OUTPUT.PUT_LINE('PROJECTNAME: ' || PNAME);  -- Outputting the retrieved PROJECTNAME.
+  13     ROWNO := ROWNO + 1;         -- Incrementing ROWNO to move to the next project number.
+  14     END LOOP;                  -- Ending the loop.
+  15   END;                        -- Ending the PL/SQL block.
+  16  /
+
+O/P: 
+
+
+PROJECTNAME:DBMS
+PROJECTNAME:JAVA
+PROJECTNAME:PYTHON
+PROJECTNAME:web
+ 
+ 
+
+

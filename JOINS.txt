@@ -1,0 +1,120 @@
+JOINS
+
+1) INNER JOIN : select only the matching rows from employee table and assigned_to 
+                and does non matching rows eliminated.
+
+SELECT employee.empno, employee.empname
+FROM employee
+INNER JOIN assigned_to ON employee.empno = assigned_to.empno;
+
+     EMPNO EMPNAME
+---------- --------------------
+         1 vrush
+         1 vrush
+         1 vrush
+         2 messi
+         3 Neymar
+
+2) LEFT JOIN: Return all matching rows + NON matching rows from the left table(1st table)
+
+SQL>  select e.empno,e.empname from employee e
+  2   LEFT JOIN assigned_to on e.empno=assigned_to.empno;
+
+     EMPNO EMPNAME
+---------- --------------------
+         1 vrush
+         1 vrush
+         1 vrush
+         2 messi
+         3 neymar
+         4 hello
+         5 kush
+
+SQL> select empname,sex,salary,projectno
+  2  from employee e
+  3  left join assigned_to on e.empno=assigned_to.empno
+  4  left join project on project.projectno=assigned_to.projectno;
+
+EMPNAME              S     SALARY  PROJECTNO
+-------------------- - ---------- ----------
+hello                m      89000
+kush                 m      19000
+vrush                m     100000          1
+vrush                m     100000          2
+vrush                m     100000          3
+messi                m       4000          1
+neymar               f     200000          3
+
+// To retrieve rows with NULL values in a condition, use IS NULL instead of = and This will give you all employees who are not assigned to any project.
+
+SQL> select empname,sex,salary,projectno
+  2  from employee e
+  3  left join assigned_to on e.empno=assigned_to.empno
+  4  left join project on project.projectno=assigned_to.projectno     
+  5  where assigned_to.projectno IS NULL;
+
+EMPNAME              S     SALARY  PROJECTNO
+-------------------- - ---------- ----------
+hello                m      89000
+kush                 m      19000
+
+
+
+SQL>  select p.projectname,p.projectno from project p
+  2   left join assigned_to on p.projectno=assigned_to.projectno
+  3   where assigned_to.projectno is null;
+
+PROJECTNAME           PROJECTNO
+-------------------- ----------
+web                           4
+
+//shows the project which is not assigned to any of the employee in the assigned_to table
+
+3) RIGHT JOIN: Returns all the matching + non matching rows from the right (2nd table)
+
+
+
+SQL>  select p.projectname,p.projectno from project p
+  2   right join assigned_to on p.projectno=assigned_to.projectno;
+
+PROJECTNAME           PROJECTNO
+-------------------- ----------
+DBMS                          1
+JAVA                          2
+PYTHON                        3
+DBMS                          1
+PYTHON                        3
+
+
+The result you’re seeing shows only the projects that have corresponding entries in the assigned_to table. If you want to display all projects from the project table, including those that may not have any matching entries in assigned_to, you should use a LEFT JOIN instead of a RIGHT JOIN.
+
+
+
+4) FULL JOIN
+
+// to get non matching rows from left and right table
+
+SQL> SELECT e.empno, e.empname, p.projectname, assigned_to.projectno
+  2  FROM employee e
+  3  FULL JOIN assigned_to ON e.empno = assigned_to.empno
+  4  FULL JOIN project p ON p.projectno = assigned_to.projectno
+  5  WHERE e.empno IS NULL OR p.projectno IS NULL;
+
+     EMPNO EMPNAME              PROJECTNAME           PROJECTNO
+---------- -------------------- -------------------- ----------
+         4 hello
+         5 kush
+                                web
+This retrieves non-matching rows from employee, assigned_to, and project.
+
+
+
+
+
+
+
+
+
+
+
+ 

@@ -1,0 +1,327 @@
+
+SQL> select max(fine_amt) from employee;
+select max(fine_amt) from employee
+           *
+ERROR at line 1:
+ORA-00904: "FINE_AMT": invalid identifier
+
+
+SQL> select max(fine_amt) from fines;
+
+MAX(FINE_AMT)
+-------------
+          300
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME              S      PHONE DOB           SA
+---------- -------------------- - ---------- --------- ------
+         1 vrush                m        999 29-MAR-99       
+         2 messi                m        111 05-JUN-90       
+         3 neymar               f        888 01-FEB-97
+         4 hello                m        878 27-FEB-98       
+
+SQL> select empname from employee where salary=
+  2  (
+  3   select max(salary) from employee
+  4  );
+
+EMPNAME
+--------------------
+hello
+
+SQL> update employee set salary=6500 where empno=3;
+
+1 row updated.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME              S      PHONE DOB           SA
+---------- -------------------- - ---------- --------- ------
+         1 vrush                m        999 29-MAR-99       
+         2 messi                m        111 05-JUN-90       
+         3 neymar               f        888 01-FEB-97       
+         4 hello                m        878 27-FEB-98       
+
+SQL> select max(salary from employee
+  2  where salary <> 
+  3  ( 
+  4   select max(salary) from employee
+  5  );
+select max(salary from employee
+                  *
+ERROR at line 1:
+ORA-00907: missing right parenthesis
+
+
+SQL> select max(salary from employee
+  2  where salary <> 
+  3  ( 
+  4   select max(salary) from employee
+  5  );
+select max(salary from employee
+                  *
+ERROR at line 1:
+ORA-00907: missing right parenthesis
+
+
+SQL>  select max(salary) from employee
+  2   where salary <> 
+  3   ( 
+  4    select max(salary) from employee
+  5   );
+
+MAX(SALARY)
+-----------
+       6500
+
+SQL> select empname from employee
+  2  where salary = 
+  3  ( 
+  4   select max(salary) from employee 
+  5   where salary <>
+  6  )
+  7  (
+  8   select max(salary) from employee
+  9  );
+)
+*
+ERROR at line 6:
+ORA-00936: missing expression
+
+
+SQL> select empname from employee 
+  2  where salary=
+  3   select max(salary) from employee
+  4   where salary <> 
+  5   ( 
+  6    select max(salary) from employee
+  7   );
+ select max(salary) from employee
+ *
+ERROR at line 3:
+ORA-00936: missing expression
+
+
+SQL> SELECT empname 
+  2  FROM employee 
+  3  WHERE salary = (
+  4    SELECT MAX(salary) 
+  5    FROM employee 
+  6    WHERE salary < (
+  7      SELECT MAX(salary) 
+  8      FROM employee
+  9    )
+ 10  );
+
+EMPNAME
+--------------------
+neymar
+
+SQL> SELECT empname 
+  2  FROM employee 
+  3  WHERE salary = (
+  4    SELECT MAX(salary) 
+  5    FROM employee SELECT empname 
+  6  FROM employee 
+  7  WHERE salary = (
+  8    SELECT MAX(salary) 
+  9    FROM employee ;
+  SELECT MAX(salary)
+  *
+ERROR at line 4:
+ORA-00921: unexpected end of SQL command
+
+
+SQL> 
+SQL>  SELECT empname 
+  2   FROM employee 
+  3   WHERE salary = (
+  4     SELECT MAX(salary) 
+  5     FROM employee 
+  6   WHERE salary <> (
+  7       SELECT MAX(salary) 
+  8       FROM employee
+  9     )
+ 10   );
+
+EMPNAME
+--------------------
+neymar
+
+SQL> select empname from employee
+  2  where salary= 
+  3  (
+  4   select max(salary) from employee
+  5  where salary<>
+  6  (
+  7   select max(salary) from employee
+  8  )
+  9  );
+
+EMPNAME
+--------------------
+neymar
+
+SQL> select * from project;
+
+ PROJECTNO PROJECTNAME          CHEIFARCHI
+---------- -------------------- ----------
+         1 DBMS                 UPK
+         2 JAVA                 IRU
+         3 PYTHON               PK
+
+SQL> select projectno,count(*) from assigned_to
+  2  group by projectno;
+
+ PROJECTNO   COUNT(*)
+---------- ----------
+         1          2
+         2          1
+         3          2
+
+SQL> select 8 from assigned_to;
+
+         8
+----------
+         8
+         8
+         8
+         8
+         8
+
+SQL> select * from assigned_to;
+
+     EMPNO  PROJECTNO
+---------- ----------
+         1          1
+         1          2
+         1          3
+         2          1
+         3          3
+
+SQL> select projectno from assigned_to
+  2  having count(*) < 2;
+select projectno from assigned_to
+       *
+ERROR at line 1:
+ORA-00937: not a single-group group function
+
+
+SQL> select projectno from assigned_to
+  2  group by projectno
+  3  having count(*) < 2;
+
+ PROJECTNO
+----------
+         2
+
+SQL> select empname from employee
+  2  where projectno IN
+  3  (
+  4   select PROJECTNO FROM assigned_to
+  5   group by projectno
+  6   having count(*) < 2
+  7  );
+where projectno IN
+      *
+ERROR at line 2:
+ORA-00904: "PROJECTNO": invalid identifier
+
+
+SQL>  select empname from employee
+  2   where projectno IN
+  3   (
+  4   select projectno  FROM assigned_to
+  5   group by projectno
+  6   having count(*) < 2
+  7  );
+ where projectno IN
+       *
+ERROR at line 2:
+ORA-00904: "PROJECTNO": invalid identifier
+
+
+SQL> select empno from assigned_to
+  2    where projectno IN
+  3    (
+  4    select projectno  FROM assigned_to
+  5    group by projectno
+  6    having count(*) < 2
+  7   );
+
+     EMPNO
+----------
+         1
+
+SQL> select * from assigned_to;
+
+     EMPNO  PROJECTNO
+---------- ----------
+         1          1
+         1          2
+         1          3
+         2          1
+         3          3
+
+SQL> select empname from employee where 
+  2  empno=
+  3  (
+  4    select empno from assigned_to
+  5     where projectno IN
+  6     (
+  7     select projectno  FROM assigned_to
+  8     group by projectno
+  9     having count(*) < 2
+ 10  )
+ 11  );
+
+EMPNAME
+--------------------
+vrush
+
+SQL> select empname,max(salary) from employee 
+  2  group by empn0;
+group by empn0
+         *
+ERROR at line 2:
+ORA-00904: "EMPN0": invalid identifier
+
+
+SQL> select empname,max(salary) from employee 
+  2  group by empno;
+select empname,max(salary) from employee
+       *
+ERROR at line 1:
+ORA-00979: not a GROUP BY expression
+
+
+SQL> 
+SQL> select empname,max(salary) from employee 
+  2  group by empn0;
+group by empn0
+         *
+ERROR at line 2:
+ORA-00904: "EMPN0": invalid identifier
+
+
+SQL> 
+SQL> select empname,max(salary) from employee 
+  2  group by empname;
+
+EMPNAME              MAX(SALARY)
+-------------------- -----------
+neymar                      6500
+hello                       7000
+vrush                       4000
+messi                       4000
+
+SQL> select empname from employee
+  2  where salary=
+  3  (
+  4   select max(salary) from employee
+  5  );
+
+EMPNAME
+--------------------
+hello
