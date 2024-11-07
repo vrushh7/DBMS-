@@ -1,0 +1,71 @@
+SQL>  create table salary_updated
+  2   (
+  3    empno integer not null,
+  4    newsalary integer not null
+  5  );
+
+o/p:
+ 
+Table created.
+
+SQL> create trigger t1_salary_updated
+  2  before update on employee
+  3  for each row
+  4  when (new.salary/old.salary > 1.1)
+  5  begin
+  6   insert into salary_updated values (:old.empno,:old.salary);
+  7  end;
+  8  /
+
+o/p:
+
+Trigger created.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME              S      PHONE DOB           SALARY
+---------- -------------------- - ---------- --------- ----------
+         4 hello                m       8898 23-JUN-99      89000
+         5 kush                 m      98989 12-FEB-98      19000
+         1 vrush                m        999 29-MAR-99     100000
+         2 messi                m        111 05-JUN-90       4000
+         3 neymar               f        888 01-FEB-97     200000
+
+SQL> update employee set salary = 10000 
+  2  where empno=2;
+
+o/p:
+
+1 row updated.
+
+
+SQL> select * from salary_updated;
+
+o/p:
+
+     EMPNO  NEWSALARY
+---------- ----------
+         2       4000
+
+
+BEFORE INSERT
+
+ SQL> CREATE OR REPLACE TRIGGER before_project_insert
+  2  BEFORE INSERT ON project
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :new.projectname IS NULL OR :new.projectname = '' THEN         RAISE_APPLICATION_ERROR(-
+20001, 'Project name cannot be null or empty');
+  6      END IF;
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> insert into project values(7,'','pkpl');
+insert into project values(7,'','pkpl')
+            *
+ERROR at line 1:
+ORA-20001: Project name cannot be null or empty
+ORA-06512: at "SCOTT.BEFORE_PROJECT_INSERT", line 2
+ORA-04088: error during execution of trigger 'SCOTT.BEFORE_PROJECT_INSERT'
